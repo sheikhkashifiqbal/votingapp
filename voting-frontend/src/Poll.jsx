@@ -41,7 +41,7 @@ export default function Poll({ pollId }) {
   if (!poll) return <div>Loading...</div>;
 
   return (
-    <div>
+    <>
       <h2>{poll.question}</h2>
       {poll.options.map((opt) => (
         <div key={opt.id}>
@@ -53,6 +53,6 @@ export default function Poll({ pollId }) {
         </div>
       ))}
       <button onClick={castVote}>Vote</button>
-    </div>
+    </>
   );
 }
