@@ -10,7 +10,8 @@ export default function Poll({ pollId }) {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
-    (async () => {
+   
+    (async () => {  console.log("in effect");
       const { data } = await axios.post('http://localhost:3001/auth/anon');
       setToken(data.token);
 
@@ -19,6 +20,7 @@ export default function Poll({ pollId }) {
 
       socket.emit('join', pollId);
       socket.on('vote', ({ optionId, votes }) => {
+        console.log("in socket-11", pollId);
         setPoll((prev) => ({
           ...prev,
           options: prev.options.map((opt) =>

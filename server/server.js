@@ -73,10 +73,13 @@ app.post('/poll/:id/vote', authMiddleware, voteLimiter, async (req, res) => {
   if (!poll.length || new Date() > new Date(poll[0].expires_at)) {
     return res.status(403).json({ message: 'Poll expired' });
   }
-
+ 
   await db.query('INSERT INTO votes (user_id, poll_id, option_id) VALUES (?, ?, ?)', [userId, pollId, optionId]);
   const [[tally]] = await db.query('SELECT COUNT(*) as votes FROM votes WHERE option_id = ?', [optionId]);
+  
+  
   io.to(`poll-${pollId}`).emit('vote', { optionId, votes: tally.votes });
+  
   res.json({ success: true });
 });
 
@@ -84,6 +87,7 @@ app.post('/poll/:id/vote', authMiddleware, voteLimiter, async (req, res) => {
 app.get('/poll/:id', async (req, res) => {
   const pollId = req.params.id;
   const [[poll]] = await db.query('SELECT * FROM polls WHERE id = ?', [pollId]);
+  
   const [options] = await db.query(
     'SELECT o.id, o.option_text, COUNT(v.id) as votes FROM poll_options o LEFT JOIN votes v ON o.id = v.option_id WHERE o.poll_id = ? GROUP BY o.id',
     [pollId]
